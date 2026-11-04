@@ -15,6 +15,13 @@ setup, and local-testing layer:
 - [Editable SVG](Ask%20Kowhai%20architecture%20-%20comprehensive.svg)
 - [High-resolution PNG](Ask%20Kowhai%20architecture%20-%20comprehensive.png)
 
+## Handover guide
+
+- [Read the reproduction and handover guide (Markdown)](Ask%20Kowhai.md)
+- [Download the unchanged Word original](reference/Ask%20Kowhai.docx)
+
+The Markdown version preserves the original guide's text, headings, lists, and tables.
+
 ## Supplied reference files
 
 The following files were copied unchanged from the supplied Downloads files:

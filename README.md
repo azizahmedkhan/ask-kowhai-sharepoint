@@ -1,6 +1,6 @@
 # Ask Kowhai — SharePoint floating chat
 
-See the [documentation index](docs/README.md) for the handover Word document, original diagrams, and comprehensive architecture SVG/PNG.
+Read the [handover guide](docs/Ask%20Kowhai.md) or see the [documentation index](docs/README.md) for the handover Word document, original diagrams, and comprehensive architecture SVG/PNG.
 
 The SPFx customizer checks the configured Entra group and mounts a floating chat
 panel. Opening the panel loads MSAL, the Copilot Studio SDK, and WebChat lazily.
