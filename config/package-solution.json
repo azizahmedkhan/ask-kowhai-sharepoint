@@ -1,0 +1,50 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "aiskillsahrepoint-client-side-solution",
+    "id": "4fce5688-724c-4303-9611-da29d7770909",
+    "version": "1.0.0.1",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.24.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "aiskillsahrepoint description"
+      },
+      "longDescription": {
+        "default": "aiskillsahrepoint description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "Application Extension - Deployment of custom action",
+        "description": "Deploys a custom action with ClientSideComponentId association",
+        "id": "15036a94-8767-42d1-9035-2224986fd7d1",
+        "version": "1.0.0.1",
+        "assets": {
+          "elementManifests": [
+            "elements.xml"
+          ]
+        }
+      }
+    ],
+    "webApiPermissionRequests": [
+  {
+    "resource": "Microsoft Graph",
+    "scope": "User.Read"
+  }
+  ]
+  },
+  "paths": {
+    "zippedPackage": "solution/aiskillsahrepoint.sppkg"
+  }
+}

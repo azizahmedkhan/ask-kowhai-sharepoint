@@ -1,0 +1,45 @@
+.launcher {
+position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid white;
+      background: white;
+      padding: 0;
+      cursor: pointer;
+      z-index: 10000;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      overflow: hidden;
+}
+
+.icon {
+width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+}
+
+.panel {
+position: fixed;
+      bottom: 100px;
+      right: 24px;
+      width: min(420px, calc(100vw - 48px));
+      height: min(600px, calc(100dvh - 124px));
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+      overflow: hidden;
+      z-index: 10000;
+}
+
+.header {
+display: flex; align-items: center; justify-content: space-between; padding: 12px; height: 48px; box-sizing: border-box;
+}
+
+.frame {
+width: 100%; height: calc(100% - 48px); border: 0; display: block;
+}
+
+.panel[hidden] { display: none; }

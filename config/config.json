@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "floating-chat-icon-application-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/floatingChatIcon/FloatingChatIconApplicationCustomizer.js",
+          "manifest": "./src/extensions/floatingChatIcon/FloatingChatIconApplicationCustomizer.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "FloatingChatIconApplicationCustomizerStrings": "lib/extensions/floatingChatIcon/loc/{locale}.js"
+  }
+}

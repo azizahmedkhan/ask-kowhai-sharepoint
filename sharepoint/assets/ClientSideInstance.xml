@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+    <ClientSideComponentInstance
+        Title="FloatingChatIcon"
+        Location="ClientSideExtension.ApplicationCustomizer"
+        ComponentId="5db080aa-0e06-4baa-b3ff-3bd800d9ac25"
+        Properties="{&quot;allowedGroupId&quot;:&quot;b689d798-c152-42be-898d-67db6fad2e8f&quot;,&quot;chatTitle&quot;:&quot;Uptec Chat Assistant&quot;,&quot;iconUrl&quot;:&quot;SiteAssets/uptec-chat.png&quot;,&quot;clientId&quot;:&quot;933a24db-023e-41c1-ab6a-2873aef8c631&quot;,&quot;tenantId&quot;:&quot;3d5a2372-e0bb-4405-9831-4d8c4917ffde&quot;,&quot;environmentId&quot;:&quot;Default-3d5a2372-e0bb-4405-9831-4d8c4917ffde&quot;,&quot;schemaName&quot;:&quot;cr02e_askkowhai_t7737d&quot;,&quot;redirectUri&quot;:&quot;https://aiskillsnz.sharepoint.com/sites/FrontLine&quot;}">
+    </ClientSideComponentInstance>
+</Elements>

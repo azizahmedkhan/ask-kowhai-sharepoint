@@ -1,0 +1,43 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/spfx-serve.schema.json",
+  "port": 4321,
+  "https": true,
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://aiskillsnz.sharepoint.com/sites/FrontLine",
+      "customActions": {
+        "5db080aa-0e06-4baa-b3ff-3bd800d9ac25": {
+          "location": "ClientSideExtension.ApplicationCustomizer",
+          "properties": {
+            "allowedGroupId": "b689d798-c152-42be-898d-67db6fad2e8f",
+            "chatTitle": "Uptec Chat Assistant",
+            "iconUrl": "SiteAssets/uptec-chat.png",
+            "clientId": "933a24db-023e-41c1-ab6a-2873aef8c631",
+            "tenantId": "3d5a2372-e0bb-4405-9831-4d8c4917ffde",
+            "environmentId": "Default-3d5a2372-e0bb-4405-9831-4d8c4917ffde",
+            "schemaName": "cr02e_askkowhai_t7737d",
+            "redirectUri": "https://aiskillsnz.sharepoint.com/sites/FrontLine"
+          }
+        }
+      }
+    },
+    "floatingChatIcon": {
+      "pageUrl": "https://{tenantDomain}/SitePages/myPage.aspx",
+      "customActions": {
+        "5db080aa-0e06-4baa-b3ff-3bd800d9ac25": {
+          "location": "ClientSideExtension.ApplicationCustomizer",
+          "properties": {
+            "allowedGroupId": "b689d798-c152-42be-898d-67db6fad2e8f",
+            "chatTitle": "Uptec Chat Assistant",
+            "iconUrl": "SiteAssets/uptec-chat.png",
+            "clientId": "933a24db-023e-41c1-ab6a-2873aef8c631",
+            "tenantId": "3d5a2372-e0bb-4405-9831-4d8c4917ffde",
+            "environmentId": "Default-3d5a2372-e0bb-4405-9831-4d8c4917ffde",
+            "schemaName": "cr02e_askkowhai_t7737d",
+            "redirectUri": "https://aiskillsnz.sharepoint.com/sites/FrontLine"
+          }
+        }
+      }
+    }
+  }
+}

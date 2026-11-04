@@ -1,0 +1,17 @@
+https://default3d5a2372e0bb440598314d8c4917ff.de.environment.api.powerplatform.com/copilotstudio/agenticruntime/3p/dataverse-backed/authenticated/bots/cr02e_askkowhai_t7737d/conversations?api-version=2022-03-01-preview
+
+here's two ways to add an agent to a web app. The embed code option lets you add an agent to a web-based app with a copied code snippet, while the Microsoft 365 Agents SDK offers a fully integrated experience.
+
+Embed code
+Copy the following code snippet and paste it into your HTML web app. If you don't have access to your code base, share the snippet with the person responsible for your web app.
+
+<!DOCTYPE html><html style="height: 100%;"><body style="height: 100%; margin: 0;"><iframe src="https://copilotstudio.microsoft.com/environments/Default-3d5a2372-e0bb-4405-9831-4d8c4917ffde/bots/cr02e_askkowhai_t7737d/webchat?__version__=2&enableFileAttachment=false&cliAgent=true" frameborder="0" style="width: 100%; height: 100%; border: 0;"></iframe></body></html>
+
+Microsoft 365 Agents SDK
+To integrate an authenticated agent with your app using Python, JavaScript, or .NET, copy the connection string and paste it into your app's code.
+
+Connection string
+https://default3d5a2372e0bb440598314d8c4917ff.de.environment.api.powerplatform.com/copilotstudio/agenticruntime/3p/dataverse-backed/authenticated/bots/cr02e_askkowhai_t7737d/conversations?api-version=2022-03-01-preview
+
+Learn more
+Using the Microsoft Custom Web Chat UI and other patterns

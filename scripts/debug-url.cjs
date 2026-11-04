@@ -1,0 +1,10 @@
+const { readFileSync } = require('node:fs');
+const config = JSON.parse(readFileSync('config/serve.json', 'utf8'));
+const selected = config.serveConfigurations[process.argv[2] || 'default'];
+if (!selected) throw new Error('Unknown serve configuration');
+const url = new URL(selected.pageUrl);
+url.searchParams.set('loadSPFX', 'true');
+url.searchParams.set('noredir', 'true');
+url.searchParams.set('debugManifestsFile', `https://localhost:${config.port}/temp/build/manifests.js`);
+url.searchParams.set('customActions', JSON.stringify(selected.customActions));
+console.log(url.href);
