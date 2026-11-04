@@ -6,15 +6,58 @@ This guide combines the tenant and billing runbook with the subsequent SharePoin
 
 Ask Kowhai is an internal Copilot Studio assistant launched from the FrontLine SharePoint site. The initial milestone is a greeting and a small set of scripted questions; approved SharePoint knowledge and richer actions follow after the basic conversation works.
 
+## Start here
+
+Ask Kowhai adds an authenticated chat panel to the FrontLine SharePoint site. Use this guide to understand the design, test the existing project, or reproduce the setup.
+
+**Current status:** the build and five mocked authentication tests passed. Live sign-in, an agent reply, billing coverage, and production readiness still need verification. A visible icon is not proof that the agent connection works.
+
+| Your task | Read next |
+| --- | --- |
+| Explain the solution to the team lead | [Architecture](#architecture-overview), then [handover explanation](#14-handover-explanation-for-alex) |
+| Run the existing project | [Restore the project](#6-create-or-restore-the-spfx-project), then [local testing](#9-local-debugging-and-functional-testing) |
+| Configure Microsoft sign-in | [Entra application](#7-configure-the-entra-browser-application) |
+| Reproduce the tenant setup | [Console map](#3-services-portals-and-administration), then [tenant and billing setup](#4-tenant-site-environment-and-billing-setup) |
+| Publish an update | [Build and deploy](#10-build-and-deploy) |
+| Decide whether to approve production use | [Acceptance checklist](#12-acceptance-and-production-readiness) |
+
+For a rebuild, follow this order:
+
+1. Verify the tenant, site, pilot group, environment, and billing coverage.
+2. Publish the agent and confirm the intended users can access it.
+3. Restore the code and configure the Entra browser application.
+4. Test the authenticated chat through the local debug URL.
+5. Build, deploy, and repeat the tests using the normal SharePoint URL.
+
+**Read the status labels carefully:** “implemented” describes the source code; “reported” preserves earlier setup history; “verify” requires a portal check or a live test. Do not recreate reported resources until you have checked whether they already exist.
+
 ## Architecture overview
 
-The full diagram shows the conversation flow, identity controls, deployment, and administration. Focused views appear beside the related sections below.
+The application runs in the user's browser on SharePoint. Microsoft Graph checks group membership; MSAL handles Microsoft sign-in; the Copilot Studio SDK connects to the agent; WebChat displays the conversation.
+
+![Ask Kowhai conversation flow](diagrams/conversation-flow.png)
+
+[Open the conversation detail](diagrams/conversation-flow.png) · [Open the complete architecture](Ask%20Kowhai%20architecture%20-%20comprehensive.png)
+
+<details>
+<summary>Expand the complete architecture, including all administration consoles</summary>
 
 ![Ask Kowhai comprehensive architecture including runtime services and administration consoles](Ask%20Kowhai%20architecture%20-%20comprehensive.png)
 
-[Open the full-resolution PNG](Ask%20Kowhai%20architecture%20-%20comprehensive.png) · [Open the editable SVG](Ask%20Kowhai%20architecture%20-%20comprehensive.svg)
+[Full-resolution PNG](Ask%20Kowhai%20architecture%20-%20comprehensive.png) · [Editable SVG](Ask%20Kowhai%20architecture%20-%20comprehensive.svg)
 
-The diagram distinguishes implemented client behavior from reported tenant setup and outstanding live validation. It does not confirm current portal permissions or billing coverage.
+</details>
+
+The diagram distinguishes implemented behavior from reported setup. It does not confirm current permissions or billing coverage.
+
+| Term | Meaning in this project |
+| --- | --- |
+| SPFx | The SharePoint extension that adds the icon and panel |
+| Microsoft Graph | API used to check the signed-in user's group membership |
+| MSAL | Browser library used to obtain a Microsoft sign-in token |
+| App registration | Entra identity for our browser application |
+| SDK | Client library that communicates with the agent |
+| Dataverse | Environment data store; the extension does not call it directly |
 
 ## 1 Current implementation and validation status
 
@@ -99,17 +142,11 @@ For the existing implementation, verify these prerequisites rather than recreati
 ### Obtain Microsoft 365 and SharePoint Online
 
 1. Sign in to the Microsoft 365 admin centre.
-
 2. Go to Billing > Purchase services or work through the organisation's Microsoft reseller/CSP.
-
 3. Obtain a Microsoft 365 business/enterprise subscription that includes SharePoint Online, or the appropriate SharePoint Online plan.
-
 4. Go to Users > Active users and create the required maker, administrator and test-user accounts.
-
 5. Go to Billing > Licences, select the product, and assign a licence to each person who needs SharePoint access.
-
 6. In the licence's app/service settings, confirm that SharePoint Online is enabled.
-
 7. Open the SharePoint admin centre and confirm that the tenant's SharePoint service is provisioned.
 
 Microsoft's current licence-management process is documented at Buy or remove business licences (https://learn.microsoft.com/en-us/office365/admin/subscriptions-and-billing/buy-licenses) and Assign licences to users (https://learn.microsoft.com/en-us/microsoft-365/admin/manage/assign-licenses-to-users).
@@ -121,21 +158,13 @@ Evidence to record: tenant name, primary domain, subscription/SKU, licensed user
 For a dedicated audience, create one assigned security group such as Ask Kowhai Users or FrontLine Users.
 
 1. Open the Microsoft Entra admin centre.
-
 2. Go to Entra ID > Groups > All groups > New group.
-
 3. Set Group type to Security.
-
 4. Enter a clear name and description.
-
 5. Set Membership type to Assigned for the proof of concept.
-
 6. Add at least one owner.
-
 7. Add the authorised pilot users as members.
-
 8. Select Create.
-
 9. Record the group's display name and Object ID.
 
 Microsoft documents these exact group steps in Manage Microsoft Entra groups (https://learn.microsoft.com/en-us/entra/fundamentals/how-to-manage-groups).
@@ -145,23 +174,16 @@ Use this group as the single audience control where the target service supports 
 ### Create the FrontLine SharePoint site
 
 1. Open the SharePoint admin centre.
-
 2. Go to Sites > Active sites > Create.
-
 3. Choose the site type:
 
 - Team site for a collaborating FrontLine group.
-
 - Communication site for a read-focused internal portal.
 
 4. Name the site FrontLine and choose its URL.
-
 5. Select the appropriate regional settings, owners, language and storage settings.
-
 6. Finish site creation and open the site.
-
 7. Create a document library or folder for the future Ask Kowhai source documents.
-
 8. Upload only approved proof-of-concept content.
 
 Microsoft's current creation route is described in Create a SharePoint site (https://learn.microsoft.com/en-gb/sharepoint/create-site-collection).
@@ -171,19 +193,14 @@ Microsoft's current creation route is described in Create a SharePoint site (htt
 The correct method depends on the site type:
 
 - For a Microsoft 365 group-connected team site, manage normal members through the site's Microsoft 365 group. Microsoft recommends this because group members automatically become site members.
-
 - For a communication site or a dedicated read-only audience, add the Entra security group to the appropriate SharePoint group: Visitors for read access or Members for edit/contribute access.
 
 Process:
 
 1. On the FrontLine site, open Settings > Site permissions.
-
 2. Add the approved group with the intended access level.
-
 3. Keep the owners group small.
-
 4. Test with an approved member.
-
 5. Test with the unapproved account and verify that access is denied.
 
 See Sharing and permissions in modern SharePoint (https://learn.microsoft.com/en-us/sharepoint/modern-experience-sharing-permissions).
@@ -191,17 +208,11 @@ See Sharing and permissions in modern SharePoint (https://learn.microsoft.com/en
 ### Create the Azure subscription
 
 1. Open the Azure portal using the AiSkills tenant.
-
 2. Search for Subscriptions and select Add.
-
 3. Select the organisation's billing account, billing profile and invoice section as applicable.
-
 4. Name the subscription AiSkills01.
-
 5. Ensure the subscription directory is the same AiSkills Microsoft Entra tenant used by Microsoft 365 and Copilot Studio.
-
 6. Assign an accountable subscription owner and a backup owner.
-
 7. Complete creation and verify that its status is Active.
 
 Azure subscription creation varies by agreement type. Microsoft's current starting point is Create an Azure subscription (https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription-request).
@@ -209,17 +220,11 @@ Azure subscription creation varies by agreement type. Microsoft's current starti
 ### Create the Azure resource group and cost controls
 
 1. In Azure, open Resource groups > Create.
-
 2. Select AiSkills01.
-
 3. Create one clear resource group for the proof of concept, for example rg-aiskills-copilot-dev.
-
 4. Select the region required for the billing resource. Australia is the sensible choice for the current setup.
-
 5. Add tags such as Project=AskKowhai, Owner=Alex/Aziz, Environment=POC and CostCentre=....
-
 6. Under Cost Management + Billing, create a budget and alert recipients.
-
 7. Record that an Azure budget alert is a notification; it does not automatically stop Copilot spending.
 
 The resource group's location stores its metadata and does not automatically determine the region of every connected service. Azure documents this distinction in Manage Azure resource groups (https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
@@ -229,21 +234,13 @@ The resource group's location stores its metadata and does not automatically det
 For a clean rebuild, use one named Australian Sandbox environment for development/testing and include Dataverse. This avoids the ambiguity caused by building in Default and later attempting to attach an ineligible or differently located environment to a billing plan.
 
 1. Open the Power Platform admin centre.
-
 2. Go to Manage > Environments > New.
-
 3. Name it, for example, AiSkills Copilot Dev.
-
 4. Set Region to Australia.
-
 5. Set Type to Sandbox for the proof of concept.
-
 6. Set Add a Dataverse data store to Yes.
-
 7. Set the Dataverse language, currency and security group.
-
 8. Save and wait until provisioning completes successfully.
-
 9. Open the environment and record its environment ID and URL.
 
 Microsoft documents this process at Work with Power Platform environments (https://learn.microsoft.com/en-us/microsoft-copilot-studio/environments-first-run-experience). Standard Power Platform pay-as-you-go association is available for Production and Sandbox environments.
@@ -257,29 +254,19 @@ There are now two administration routes. Select one route for the exact environm
 #### Recommended route for the existing Default environment agent  Microsoft 365 resource based spending policy
 
 1. Open the Microsoft 365 admin centre.
-
 2. Go to Copilot > Cost Management > Configuration.
-
 3. Select Add spending policy.
-
 4. Give it a clear name, for example Ask Kowhai Australia POC.
-
 5. Set the policy scope to Resources.
-
 6. Choose either:
 
 - Specific resource and select Ask Kowhai, or
-
 - Resource collection > Specific environments and select AiSkills (default).
 
 7. Set a modest monthly policy limit and a smaller per-agent limit suitable for a proof of concept.
-
 8. Configure alert thresholds and recipients.
-
 9. Select the Azure pay-as-you-go billing method linked to AiSkills01.
-
 10. In advanced billing settings, select the Australian billing region and the intended resource group.
-
 11. Create the policy and allow up to 12 minutes for it to apply.
 
 Microsoft confirms that a Microsoft 365 resource-based policy takes precedence over Power Platform capacity allocations and linked billing plans for the covered agent/environment. Identity-based user/group policies are different and are not a substitute for an agent or environment resource policy. See Manage Copilot Studio costs in Microsoft 365 (https://learn.microsoft.com/en-us/copilot/implement/usage-based-billing-manage-copilot-studio-costs).
@@ -287,21 +274,13 @@ Microsoft confirms that a Microsoft 365 resource-based policy takes precedence o
 #### Alternative route for a new eligible Sandbox Production environment  Power Platform billing plan
 
 1. Open the Power Platform admin centre.
-
 2. Go to Licensing > Pay-as-you-go plans > New billing plan.
-
 3. Select the AiSkills01 subscription.
-
 4. Select the intended resource group.
-
 5. Select the Copilot Studio product/meter.
-
 6. In the environment selector, choose Australia.
-
 7. Select the exact Sandbox/Production environment.
-
 8. Save.
-
 9. Go to Licensing > Copilot Studio and configure whether the environment uses allocated capacity, tenant capacity or the pay-as-you-go plan for overage.
 
 Microsoft describes this in Set up Power Platform pay-as-you-go (https://learn.microsoft.com/en-us/power-platform/admin/pay-as-you-go-set-up) and Manage Copilot Credits and capacity (https://learn.microsoft.com/en-us/power-platform/admin/manage-copilot-studio-copilot-credits-capacity).
@@ -309,15 +288,10 @@ Microsoft describes this in Set up Power Platform pay-as-you-go (https://learn.m
 #### Credit verification
 
 1. In the Power Platform admin centre, go to Licensing > Copilot Studio > Environments.
-
 2. Select the exact environment by ID, not merely by a similar name.
-
 3. Confirm the page shows an active capacity or billing source.
-
 4. Open Manage Agents, find Ask Kowhai and confirm its environment.
-
 5. Set an agent monthly limit and alert.
-
 6. Test the agent.
 
 A spending limit controls consumption; it is not itself a free allocation of credits. If the agent still reports EnforcementUsageCredits, capture the policy name, scope, billing method, environment ID, conversation ID and UTC timestamp for Microsoft support.
@@ -329,11 +303,8 @@ Use the existing agent where possible. Confirm its environment ID and schema nam
 ### Create Ask Kowhai in Copilot Studio
 
 1. Open Copilot Studio and use the environment selector to choose the exact Australian environment.
-
 2. Create a new agent named Ask Kowhai.
-
 3. Use a short description such as: “A proof-of-concept assistant demonstrating an AI chatbot launched from the FrontLine SharePoint site.”
-
 4. Add these instructions:
 
 You are Ask Kowhai, a friendly and helpful AI assistant for Uptec.
@@ -341,23 +312,14 @@ You are Ask Kowhai, a friendly and helpful AI assistant for Uptec.
 Your purpose is to demonstrate that an AI chatbot can be launched and used from our SharePoint site.
 
 1. Greet users warmly and introduce yourself as Ask Kowhai.
-
 2. Keep all answers short, simple, and friendly.
-
 3. When a user says "Hi" or "Hello", reply: "Hi! I'm Kowhai, your AiSkills assistant. How can I help you today?"
-
 4. When a user asks "Are you working?", reply: "Yes! Ask Kowhai is working successfully."
-
 5. When a user asks "Where are you running?", reply: "I'm Ask Kowhai, a test agent created using Microsoft Copilot Studio."
-
 6. If you don't know an answer, explain that you're currently a demonstration chatbot.
-
 7. Never pretend to have access to documents or information you haven't been given.
-
 5. Resolve the organisation-name inconsistency: either change “Uptec” to “AiSkills” or change the greeting so both use the same name.
-
 6. For this initial greeting demo, disable/remove Work IQ if the interface allows it. It is unnecessary for scripted responses and uses consumption billing when invoked.
-
 7. Do not connect SharePoint knowledge until the basic billing and response test passes.
 
 ### Test before publishing
@@ -365,15 +327,10 @@ Your purpose is to demonstrate that an AI chatbot can be launched and used from 
 Ask these questions in the test panel:
 
 1. Hi
-
 2. Are you working?
-
 3. Where are you running?
-
 4. What is your purpose?
-
 5. Can you read our SharePoint documents?
-
 6. What is Uptec's annual leave policy?
 
 Expected result: the first four receive short answers; the last two must not claim access to content that has not been connected.
@@ -383,11 +340,8 @@ If EnforcementUsageCredits appears, stop channel work and return to the billing 
 ### Publish the agent
 
 1. Select Publish in Copilot Studio.
-
 2. Wait for publishing to complete.
-
 3. Test again using a new session.
-
 4. After later changes, republish; saved draft changes are not automatically delivered to channels.
 
 ### Authentication and published access
@@ -396,25 +350,30 @@ In Settings > Safety & access, keep Authenticate with Microsoft selected, save, 
 
 ## 6 Create or restore the SPFx project
 
-For a new project, install VS Code and a supported Node.js version. This project’s package.json supports Node 22.14 or later within v22, plus the specified v24/v26 ranges.
+### Existing repository
 
-Install the development tools:
+Use a supported Node.js version from `package.json`. Open the existing project in VS Code, then install its locked dependencies:
 
+```bash
+npm ci
+```
+
+Check `config/serve.json` against the [configuration inventory](#2-environment-and-configuration-inventory). Do not create a second agent, app registration, or group if the existing resources are correct.
+
+**Checkpoint:** dependencies install successfully and the extension properties identify the intended tenant, agent, group, and callback. Continue to [Entra configuration](#7-configure-the-entra-browser-application), or go directly to [local testing](#9-local-debugging-and-functional-testing) if Entra is already configured.
+
+<details>
+<summary>Starting from an empty folder instead? Expand the project-generation steps</summary>
+
+Install VS Code and a supported Node.js version, then run:
+
+```bash
 npm install --global yo @microsoft/generator-sharepoint @rushstack/heft
-
-Create and open a folder:
-
 mkdir aiskillsahrepoint
-
 cd aiskillsahrepoint
-
 code .
-
-In VS Code’s terminal, run:
-
 yo @microsoft/sharepoint
-
-Choose:
+```
 
 | Generator setting | Selection |
 | --- | --- |
@@ -422,13 +381,9 @@ Choose:
 | Extension type | Application Customizer |
 | Component name | FloatingChatIcon |
 
-The generator creates the TypeScript project, manifest, and build configuration. SPFx 1.22 and later use the Heft toolchain. Microsoft development setup
+Generation creates a scaffold, not the completed authenticated chat. Use this repository's implementation and preserve its `package.json` and lockfile for reproduction. SPFx 1.22 and later use Heft. This project uses SPFx `1.24.0-rc.0`; a new generator may produce different versions.
 
-For our existing project, do not generate it again. Open the existing folder and use:
-
-npm ci
-
-For exact reproduction, preserve the repository’s package.json and lockfile. The current project uses SPFx 1.24.0-rc.0, which is a release candidate; a freshly generated project may use different versions.
+</details>
 
 ## 7 Configure the Entra browser application
 
@@ -441,24 +396,17 @@ Entra handles the browser application identity and user sign-in. Microsoft Graph
 In Microsoft Entra admin center:
 
 1. Select the AiSkills directory.
-
 2. Open Entra ID → App registrations → New registration.
-
 3. Enter AskKowhai SharePoint Chat.
-
 4. Select Accounts in this organizational directory only.
-
 5. Register the application.
 
-Copy these values from Overview:
+Copy these values from **Overview**:
 
-Application (client) ID:
-
-933a24db-023e-41c1-ab6a-2873aef8c631
-
-Directory (tenant) ID:
-
-3d5a2372-e0bb-4405-9831-4d8c4917ffde
+| Field | Current value |
+| --- | --- |
+| Application (client) ID | `933a24db-023e-41c1-ab6a-2873aef8c631` |
+| Directory (tenant) ID | `3d5a2372-e0bb-4405-9831-4d8c4917ffde` |
 
 The Object ID is another identifier, but our browser client doesn’t use it.
 
@@ -469,21 +417,11 @@ The registration identifies the application requesting access. It doesn’t auto
 Inside that app registration:
 
 1. Open API permissions → Add a permission.
-
 2. Select APIs my organization uses.
-
 3. Search for Power Platform API.
-
-4. Verify its application ID:
-
-8578e004-a5c6-46e7-913e-12f58912df43
-
+4. Verify its application ID: `8578e004-a5c6-46e7-913e-12f58912df43`.
 5. Select Delegated permissions.
-
-6. Add:
-
-CopilotStudio.Copilots.Invoke
-
+6. Add `CopilotStudio.Copilots.Invoke`.
 7. Obtain user or administrator consent as required by the tenant’s consent policy.
 
 Delegated means the application acts on behalf of a signed-in user. The SharePoint API permission tile isn’t a substitute for permission to invoke Copilot Studio. Microsoft SDK setup instructions
@@ -502,19 +440,11 @@ Our SPFx package requests Graph User.Read. Its permission approval is managed th
 In the app registration:
 
 1. Open Authentication → Add a platform.
-
 2. Select Single-page application.
-
-3. Register this exact redirect URI:
-
-https://aiskillsnz.sharepoint.com/sites/FrontLine
-
+3. Register this exact redirect URI: `https://aiskillsnz.sharepoint.com/sites/FrontLine`.
 4. Use no trailing slash or debug query parameters.
-
 5. Leave the front-channel logout URL blank.
-
 6. Leave both implicit-grant checkboxes unchecked.
-
 7. Save.
 
 Our implementation uses authorization code flow with PKCE. It doesn’t need a client secret.
@@ -544,21 +474,16 @@ The main authentication dependencies are MSAL Browser, the Copilot Studio client
 
 Tenant-specific settings live in SPFx extension properties, including:
 
-clientId
-
-tenantId
-
-environmentId
-
-schemaName
-
-redirectUri
-
-allowedGroupId
-
-chatTitle
-
-iconUrl
+| Property | Identifies or controls |
+| --- | --- |
+| `clientId` | Browser app registration |
+| `tenantId` | Entra directory |
+| `environmentId` | Agent environment |
+| `schemaName` | Agent schema name |
+| `redirectUri` | Exact registered SPA callback |
+| `allowedGroupId` | Launcher audience group |
+| `chatTitle` | Panel title |
+| `iconUrl` | Launcher image |
 
 For local testing, those properties are in config/serve.json. Initial site deployment properties are in sharepoint/assets/elements.xml.
 
@@ -578,19 +503,27 @@ The group check controls icon visibility. Agent authorization and access to unde
 
 ## 9 Local debugging and functional testing
 
+**Before you begin:** the agent is published, the Entra callback and invocation permission are configured, and your test user belongs to the configured group.
+
 Trust the development certificate when setting up the machine:
 
+```bash
 npx heft trust-dev-cert
+```
 
 Start the local server:
 
+```bash
 npx heft start --nobrowser
+```
 
 Keep that terminal running.
 
 In another terminal, generate the debug URL:
 
+```bash
 npm run debug:url
+```
 
 This is a project-specific helper we added, not a standard Heft command.
 
@@ -615,28 +548,21 @@ https://aiskillsnz.sharepoint.com/sites/FrontLine
 
 Regenerate the debug URL whenever configuration changes—old URLs contain old properties.
 
+**Checkpoint:** the panel signs in and the agent returns a reply and a contextual follow-up. Loading a script or opening a panel alone is not a successful conversation test.
+
 ### Functional checks and troubleshooting
 
 Perform these checks in Edge:
 
 1. Sign into SharePoint as a member of the configured group.
-
 2. Open the newly generated debug URL.
-
 3. Confirm the icon appears.
-
 4. Open it and select Sign in to chat.
-
 5. Complete Microsoft sign-in.
-
 6. Send a harmless question.
-
 7. Send a follow-up to verify conversation context.
-
 8. Close and reopen the panel.
-
 9. Verify a nonmember doesn’t see the icon.
-
 10. Cancel sign-in and verify retry remains available.
 
 Useful troubleshooting distinctions:
@@ -662,13 +588,16 @@ Heft produces the package for the App Catalog and site installation. Billing man
 
 Run:
 
+```bash
 npm run build
+```
 
 Our script executes:
 
+```bash
 heft test --clean --production
-
 heft package-solution --production
+```
 
 It produces:
 
@@ -677,17 +606,11 @@ sharepoint/solution/aiskillsahrepoint.sppkg
 For deployment:
 
 1. Increase the solution and feature versions when publishing an upgrade.
-
 2. Upload the package to the SharePoint App Catalog.
-
 3. Deploy/enable it.
-
 4. Install or update the app on the target site.
-
 5. Approve any required SPFx API requests.
-
 6. Verify the existing extension registration has the current properties.
-
 7. Test using the normal SharePoint URL without debug parameters.
 
 Our current package requires site installation: skipFeatureDeployment is false.
@@ -710,68 +633,55 @@ Copilot Studio’s manual authentication supports Entra configurations and gener
 
 Also distinguish SSO from anonymous access: SSO reuses an authenticated identity where possible. Our current implementation still presents a sign-in button and may require a popup.
 
-### Add the Web App iframe to a SharePoint page
+<details>
+<summary>Historical iframe alternative — not the current implementation</summary>
+
+The iframe previously returned an access error. These steps are retained for reference; follow the SDK setup above for this project.
 
 The Apps/Web App panel supplied an iframe URL for the current agent.
 
 1. Open the FrontLine SharePoint page in edit mode.
-
 2. Add the Embed web part.
-
 3. Paste only the iframe element, not the surrounding <!DOCTYPE>, <html> and <body> tags.
-
 4. Use a reasonable height, for example 600 px.
-
 5. Preview the page and test with the authorised account.
-
 6. Save as a draft first.
-
 7. Test the direct iframe URL and the page with the unauthorised account before publishing broadly.
-
 8. If SharePoint reports that embedding is blocked, ask the SharePoint administrator to allow the required copilotstudio.microsoft.com domain under the tenant/site embed policy.
 
 Example shape:
 
+```html
 <iframe
-
 src="PASTE-THE-COPILOT-STUDIO-WEBCHAT-URL-HERE"
-
 width="100%"
-
 height="600"
-
 frameborder="0"
-
 style="border:0"
-
 title="Ask Kowhai">
-
 </iframe>
+```
 
 Important: restricting the SharePoint page does not prove that the direct webchat URL is restricted. Test both. Do not turn off authentication merely to make an iframe appear if the agent will access internal content.
+
+
+</details>
 
 ### Add SharePoint as knowledge later
 
 “SharePoint knowledge” and “SharePoint channel” are different:
 
 - A knowledge source lets the agent search approved SharePoint content.
-
 - A channel is where the user opens and chats with the agent.
 
 After the basic agent works:
 
 1. Add one narrowly scoped SharePoint site, library, folder or file as knowledge.
-
 2. Sign in with an account that has access to that content.
-
 3. Confirm indexing/readiness.
-
 4. Ask questions whose answers appear only in the test documents.
-
 5. Verify that answers cite the expected source.
-
 6. Test with an approved and an unapproved user.
-
 7. Do not assume adding the agent to a page grants permission to its knowledge. SharePoint permissions remain authoritative.
 
 ## 12 Acceptance and production readiness
@@ -780,41 +690,28 @@ The SPFx proof of concept has configurable settings, authenticated SDK connectio
 
 ### Tenant billing and access
 
-- Confirm SharePoint licensing, the FrontLine site type, and the approved group’s name and Object ID.
-
-- Verify authorised site access and denial for an unapproved account.
-
-- Confirm Dataverse, the exact agent environment, and the active billing or capacity source.
-
-- Record the Australian billing policy’s name, administration portal, scope, billing method, monthly agent limit, and alert recipients. Capture evidence that it covers the agent or exact environment.
-
-- Confirm usage appears in the relevant Microsoft 365 or Power Platform cost-management view.
+- [ ] Confirm SharePoint licensing, the FrontLine site type, and the approved group’s name and Object ID.
+- [ ] Verify authorised site access and denial for an unapproved account.
+- [ ] Confirm Dataverse, the exact agent environment, and the active billing or capacity source.
+- [ ] Record the Australian billing policy’s name, administration portal, scope, billing method, monthly agent limit, and alert recipients. Capture evidence that it covers the agent or exact environment.
+- [ ] Confirm usage appears in the relevant Microsoft 365 or Power Platform cost-management view.
 
 ### Agent and deployed client
 
-- Confirm the agent harness supports the selected SDK and authentication flow.
-
-- Verify Authenticate with Microsoft, published-agent sharing, and current publication.
-
-- Confirm the scripted greeting in Copilot Studio after the billing change.
-
-- Complete live Microsoft sign-in and verify an agent response plus a contextual follow-up in SharePoint.
-
-- Test close/reopen, cancellation and retry, and the absence of the icon for a nonmember. Icon visibility alone does not prove agent authorization.
-
-- Test the installed package at the normal SharePoint URL with representative users.
-
-- If using an iframe alternative, test both the restricted page and direct iframe URL for unintended access.
-
-- Confirm the agent does not claim knowledge it has not received. When SharePoint knowledge is enabled, verify correct answers, citations, and source permissions.
+- [ ] Confirm the agent harness supports the selected SDK and authentication flow.
+- [ ] Verify Authenticate with Microsoft, published-agent sharing, and current publication.
+- [ ] Confirm the scripted greeting in Copilot Studio after the billing change.
+- [ ] Complete live Microsoft sign-in and verify an agent response plus a contextual follow-up in SharePoint.
+- [ ] Test close/reopen, cancellation and retry, and the absence of the icon for a nonmember. Icon visibility alone does not prove agent authorization.
+- [ ] Test the installed package at the normal SharePoint URL with representative users.
+- [ ] If using an iframe alternative, test both the restricted page and direct iframe URL for unintended access.
+- [ ] Confirm the agent does not claim knowledge it has not received. When SharePoint knowledge is enabled, verify correct answers, citations, and source permissions.
 
 ### Engineering hardening
 
-- Implement active-conversation token refresh. The current workaround is to reload and sign in again after expiry.
-
-- Review the SPFx release candidate and pinned beta SDK before production.
-
-- Review dependency findings and record the final package versions and production deployment result.
+- [ ] Implement active-conversation token refresh. The current workaround is to reload and sign in again after expiry.
+- [ ] Review the SPFx release candidate and pinned beta SDK before production.
+- [ ] Review dependency findings and record the final package versions and production deployment result.
 
 ## 13 Troubleshooting lessons
 
@@ -837,9 +734,7 @@ This document consolidates the two supplied handovers dated or provided on 5 Nov
 Additional references retained from the original runbook:
 
 - Available channels for newer agents: https://learn.microsoft.com/en-us/microsoft-copilot-studio/agents-experience/publication-channels-overview
-
 - Native SharePoint publishing: https://learn.microsoft.com/en-us/microsoft-copilot-studio/publication-add-bot-to-sharepoint
-
 - Copilot Studio SDK integration and support: https://learn.microsoft.com/en-us/microsoft-365/agents-sdk/integrate-with-mcs
 
 The later implementation text included generic Microsoft reference labels without URLs. Those labels have been omitted rather than converted into unverified links.

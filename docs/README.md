@@ -20,7 +20,7 @@ setup, and local-testing layer:
 - [Read the reproduction and handover guide (Markdown)](Ask%20Kowhai.md)
 - [Download the unchanged Word original](reference/Ask%20Kowhai.docx)
 
-The Markdown version preserves the original guide's text, headings, lists, and tables.
+The Markdown guide adds navigation, copyable commands, checkpoints, and focused diagrams. Historical and optional paths are expandable; the unchanged Word file retains the original supplied wording.
 
 ## Focused architecture views
 
