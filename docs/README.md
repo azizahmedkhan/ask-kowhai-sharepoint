@@ -22,6 +22,17 @@ setup, and local-testing layer:
 
 The Markdown version preserves the original guide's text, headings, lists, and tables.
 
+## Focused architecture views
+
+The Markdown handover embeds the full architecture and these details beside the relevant sections:
+
+- [Identity and access](diagrams/identity-access.png)
+- [Conversation flow](diagrams/conversation-flow.png)
+- [Deployment and billing](diagrams/deployment-billing.png)
+- [Administration consoles](diagrams/administration.png)
+
+Each detail also has an SVG source in `diagrams/`.
+
 ## Supplied reference files
 
 The following files were copied unchanged from the supplied Downloads files:

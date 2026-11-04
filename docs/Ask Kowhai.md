@@ -6,6 +6,16 @@ This guide combines the tenant and billing runbook with the subsequent SharePoin
 
 Ask Kowhai is an internal Copilot Studio assistant launched from the FrontLine SharePoint site. The initial milestone is a greeting and a small set of scripted questions; approved SharePoint knowledge and richer actions follow after the basic conversation works.
 
+## Architecture overview
+
+The full diagram shows the conversation flow, identity controls, deployment, and administration. Focused views appear beside the related sections below.
+
+![Ask Kowhai comprehensive architecture including runtime services and administration consoles](Ask%20Kowhai%20architecture%20-%20comprehensive.png)
+
+[Open the full-resolution PNG](Ask%20Kowhai%20architecture%20-%20comprehensive.png) · [Open the editable SVG](Ask%20Kowhai%20architecture%20-%20comprehensive.svg)
+
+The diagram distinguishes implemented client behavior from reported tenant setup and outstanding live validation. It does not confirm current portal permissions or billing coverage.
+
 ## 1 Current implementation and validation status
 
 The implemented client is an SPFx Application Customizer. It checks the signed-in user’s Entra group membership, displays a floating icon to eligible users, and opens a chat panel. MSAL handles Microsoft sign-in, the Copilot Studio SDK connects to the agent, and Bot Framework WebChat displays the conversation. No Azure Function, App Service, or custom backend has been added.
@@ -46,6 +56,12 @@ One compatibility question remains unresolved: the original runbook identified A
 Ask Kowhai remained in the Australian Default environment in the source record. Creating the US test environment did not move the agent. Client ID, tenant ID, schema name, and environment ID identify different resources and are not interchangeable.
 
 ## 3 Services portals and administration
+
+![Administration consoles and their configuration responsibilities](diagrams/administration.png)
+
+These consoles configure the runtime services; they are not additional hops in each conversation. Evidence labels distinguish implemented configuration from portal state that still needs verification.
+
+[Open this detail at full resolution](diagrams/administration.png)
 
 ### Portal map
 
@@ -416,6 +432,12 @@ For exact reproduction, preserve the repository’s package.json and lockfile. T
 
 ## 7 Configure the Entra browser application
 
+![Entra sign-in and the separate Microsoft Graph group-membership check](diagrams/identity-access.png)
+
+Entra handles the browser application identity and user sign-in. Microsoft Graph is called separately through the SPFx client to control launcher visibility. Agent invocation permission and SPFx Graph approval are separate grants.
+
+[Open this detail at full resolution](diagrams/identity-access.png)
+
 In Microsoft Entra admin center:
 
 1. Select the AiSkills directory.
@@ -500,6 +522,12 @@ Our implementation uses authorization code flow with PKCE. It doesn’t need a c
 The callback is the SharePoint site even during local debugging: localhost serves the JavaScript files, while the application runs inside SharePoint. MSAL handles the popup response; we didn’t create a separate callback HTML page. Microsoft SharePoint integration sample
 
 ## 8 Implementation configuration and sign in flow
+
+![Pilot user opens the SharePoint chat panel and invokes Copilot Studio with a delegated user token](diagrams/conversation-flow.png)
+
+The extension runs in the browser on the SharePoint page. The numbered conversation step follows the membership and sign-in steps in the full diagram. Dataverse is environment support; this client does not call it directly. SharePoint knowledge is shown as future work.
+
+[Open this detail at full resolution](diagrams/conversation-flow.png)
 
 We separated the implementation into these files:
 
@@ -625,6 +653,12 @@ Useful troubleshooting distinctions:
 The five passing unit tests cover popup configuration, cached-account selection, interaction retry, cancellation, and disposal during sign-in. They mock Microsoft services and don’t prove a live conversation works.
 
 ## 10 Build and deploy
+
+![Deployment tools and billing management are separate from the conversation flow](diagrams/deployment-billing.png)
+
+Heft produces the package for the App Catalog and site installation. Billing management associates the applicable policy or capacity with the agent or environment; building or deploying the package does not configure billing.
+
+[Open this detail at full resolution](diagrams/deployment-billing.png)
 
 Run:
 
